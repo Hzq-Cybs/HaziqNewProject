@@ -12,12 +12,12 @@
  */
 try {
   window.SUPABASE_URL =
-    localStorage.getItem("SUPABASE_URL") || "https://YOUR-PROJECT.supabase.co";
+    localStorage.getItem("SUPABASE_URL") || "https://zivdxmxbsntburlrcdkr.supabase.co";
   window.SUPABASE_ANON_KEY =
-    localStorage.getItem("SUPABASE_ANON_KEY") || "YOUR-ANON-PUBLIC-KEY";
+    localStorage.getItem("SUPABASE_ANON_KEY") || "sb_publishable_GB7PG92ZL9bZdIq7Cj4ejg_I_6xHYyz";
 } catch {
-  window.SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
-  window.SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+  window.SUPABASE_URL = "https://zivdxmxbsntburlrcdkr.supabase.co";
+  window.SUPABASE_ANON_KEY = "sb_publishable_GB7PG92ZL9bZdIq7Cj4ejg_I_6xHYyz";
 }
 // Where password-recovery emails should send users back to.
 // Keep as origin so it works on localhost + Vercel without edits.
