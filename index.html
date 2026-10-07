@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cadence — Daily project tasks</title>
+  <meta name="description" content="Cadence is a calm, premium daily task manager for projects. Powerful without clutter." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231A1917'/%3E%3Cpath d='M9 20.5c3-0.5 4.5-2 5.5-5.5 1 3.5 2.5 5 5.5 5.5-3 0.5-4.5 2-5.5 5.5-1-3.5-2.5-5-5.5-5.5z' fill='%23F7F5F0'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,0,500;9..144,0,600;9..144,1,400&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="focus-progress" aria-hidden="true"><span></span></div>
+
+  <div class="app" id="app">
+    <!-- ============ SIDEBAR ============ -->
+    <div class="scrim" id="scrim" hidden></div>
+    <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="26" height="26"><rect width="32" height="32" rx="9" fill="#1A1917"/><path d="M9 20.5c3-0.5 4.5-2 5.5-5.5 1 3.5 2.5 5 5.5 5.5-3 0.5-4.5 2-5.5 5.5-1-3.5-2.5-5-5.5-5.5z" fill="#F7F5F0"/></svg>
+        </div>
+        <div class="brand-text">
+          <strong>Cadence</strong>
+          <span id="workspace-sub">Tuesday flow</span>
+        </div>
+        <button class="icon-btn only-mobile" id="close-sidebar" aria-label="Close menu">✕</button>
+      </div>
+
+      <div class="side-section">
+        <p class="side-label">Views</p>
+        <nav class="views" id="views">
+          <button class="view is-active" data-view="today">
+            <span class="view-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.5V8l2.4 1.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <span class="view-name">Today</span>
+            <span class="view-count" id="count-today">0</span>
+          </button>
+          <button class="view" data-view="upcoming">
+            <span class="view-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="2.2" y="3" width="11.6" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.2 6h11.6M5.5 1.5v2M10.5 1.5v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <span class="view-name">Next 7 days</span>
+            <span class="view-count" id="count-upcoming">0</span>
+          </button>
+          <button class="view" data-view="all">
+            <span class="view-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <span class="view-name">All tasks</span>
+            <span class="view-count" id="count-all">0</span>
+          </button>
+          <button class="view" data-view="completed">
+            <span class="view-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.4 8.2l1.8 1.8 3.4-3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="view-name">Done</span>
+            <span class="view-count" id="count-done">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="side-section grow">
+        <div class="side-row">
+          <p class="side-label">Projects</p>
+          <button class="mini-btn" id="add-project" aria-label="Add project">+ New</button>
+        </div>
+        <div class="projects" id="projects"></div>
+      </div>
+
+      <div class="side-foot">
+        <div class="day-progress">
+          <div class="day-progress-top">
+            <span id="day-progress-label">0 of 0 done</span>
+            <span id="day-progress-pct">0%</span>
+          </div>
+          <div class="bar"><span id="day-progress-bar"></span></div>
+        </div>
+        <div class="side-actions">
+          <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme (T)">
+            <span class="sun" aria-hidden="true">◐</span>
+          </button>
+          <button class="icon-btn" id="export-btn" aria-label="Export tasks" title="Export JSON">⭳</button>
+          <button class="icon-btn" id="reset-btn" aria-label="Reset demo data" title="Reset demo data">↺</button>
+          <button class="kbd-hint" id="open-palette" title="Command palette">⌘K</button>
+        </div>
+        <p class="side-hint"><kbd>N</kbd> new task &nbsp;·&nbsp; <kbd>/</kbd> search &nbsp;·&nbsp; <kbd>T</kbd> theme</p>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" id="open-sidebar" aria-label="Open menu">☰</button>
+        <div class="date-line">
+          <span id="today-iso">—</span>
+          <i>·</i>
+          <span id="streak-line">0-day streak</span>
+        </div>
+        <div class="top-actions">
+          <label class="search">
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="Search tasks…  ( / )" autocomplete="off" />
+            <kbd>⌘K</kbd>
+          </label>
+          <button class="icon-btn" id="theme-toggle-2" aria-label="Toggle theme">◐</button>
+          <button class="avatar" id="avatar" title="Your day">H</button>
+        </div>
+      </header>
+
+      <div class="scroll">
+        <section class="hero">
+          <p class="eyebrow" id="greeting-eyebrow">Good morning — let's make today legible</p>
+          <h1 id="greeting-title">What deserves<br /><em>your attention</em> today?</h1>
+          <p class="hero-sub" id="hero-sub">3 open · 0 overdue · keep it to three big wins.</p>
+        </section>
+
+        <!-- Focus strip: single highlighted surface, not a card grid -->
+        <section class="focus-strip" id="focus-strip" aria-label="Current focus">
+          <div class="focus-left">
+            <span class="pulse" id="focus-pulse" aria-hidden="true"></span>
+            <div>
+              <p class="focus-kicker">Now focusing · <span id="focus-timer-label">25:00</span></p>
+              <p class="focus-title" id="focus-title">Nothing pinned — pick one task to anchor the day.</p>
+            </div>
+          </div>
+          <div class="focus-controls">
+            <button class="btn ghost" id="focus-pick">Pick focus</button>
+            <button class="btn dark" id="focus-toggle">Start</button>
+            <button class="icon-btn" id="focus-reset" aria-label="Reset timer" title="Reset">↺</button>
+          </div>
+        </section>
+
+        <!-- Composer -->
+        <section class="composer" aria-label="Add a task">
+          <div class="composer-row">
+            <button class="composer-check" id="composer-check" aria-label="Add task">+</button>
+            <input id="composer-input" type="text" placeholder="Add a task — try “Review deck tomorrow p1 #Website”" autocomplete="off" maxlength="220" />
+            <button class="btn dark composer-go" id="composer-go">Add <kbd>↵</kbd></button>
+          </div>
+          <div class="composer-meta">
+            <div class="chip-row" role="toolbar" aria-label="Quick attributes">
+              <button class="chip" data-attr="today">Today</button>
+              <button class="chip" data-attr="tomorrow">Tomorrow</button>
+              <button class="chip" data-attr="p1">P1</button>
+              <button class="chip" data-attr="p2">P2</button>
+              <button class="chip" data-attr="p3">P3</button>
+              <span class="composer-hint">Smart input: <code>p1–p4</code> · <code>today</code> <code>tomorrow</code> <code>fri</code> · <code>#project</code></span>
+            </div>
+            <div class="composer-opts">
+              <select id="composer-project" aria-label="Project"></select>
+              <select id="composer-priority" aria-label="Priority">
+                <option value="4">No priority</option>
+                <option value="3">P3 · Low</option>
+                <option value="2" selected>P2 · Normal</option>
+                <option value="1">P1 · Urgent</option>
+              </select>
+              <input id="composer-date" type="date" aria-label="Due date" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Filter bar: single quiet line -->
+        <div class="filterbar">
+          <div class="seg" id="sort-seg" role="tablist" aria-label="Sort">
+            <button class="is-active" data-sort="manual">Manual</button>
+            <button data-sort="due">Due</button>
+            <button data-sort="priority">Priority</button>
+          </div>
+          <div class="filter-right">
+            <select id="filter-priority" aria-label="Filter by priority">
+              <option value="">All priorities</option>
+              <option value="1">P1 only</option>
+              <option value="2">P2 only</option>
+              <option value="3">P3 only</option>
+              <option value="4">No priority</option>
+            </select>
+            <label class="switch"><input type="checkbox" id="hide-done" /><span></span> Hide done</label>
+          </div>
+        </div>
+
+        <!-- Task groups -->
+        <div id="groups"></div>
+
+        <footer class="page-foot">
+          <p>Cadence keeps everything on this device. <button class="link" id="export-link">Export</button> · <button class="link" id="import-link">Import</button> · <button class="link" id="clear-done">Clear done</button></p>
+          <input type="file" id="import-file" accept="application/json" hidden />
+        </footer>
+      </div>
+    </main>
+
+    <!-- ============ DETAIL DRAWER ============ -->
+    <aside class="drawer" id="drawer" aria-label="Task details" hidden>
+      <div class="drawer-head">
+        <p class="side-label">Task details</p>
+        <button class="icon-btn" id="drawer-close" aria-label="Close details">✕</button>
+      </div>
+      <div class="drawer-body">
+        <label class="field">
+          <span>Title</span>
+          <input id="d-title" type="text" maxlength="220" />
+        </label>
+        <label class="field">
+          <span>Notes</span>
+          <textarea id="d-notes" rows="3" placeholder="Context, links, acceptance criteria…"></textarea>
+        </label>
+        <div class="field-grid">
+          <label class="field"><span>Project</span><select id="d-project"></select></label>
+          <label class="field"><span>Due</span><input id="d-date" type="date" /></label>
+          <label class="field"><span>Priority</span>
+            <select id="d-priority">
+              <option value="1">P1 · Urgent</option>
+              <option value="2">P2 · Normal</option>
+              <option value="3">P3 · Low</option>
+              <option value="4">No priority</option>
+            </select>
+          </label>
+          <label class="field"><span>Estimate (min)</span><input id="d-est" type="number" min="0" max="960" step="5" placeholder="25" /></label>
+        </div>
+        <div class="field">
+          <span>Subtasks <em id="sub-count"></em></span>
+          <div class="subs" id="d-subs"></div>
+          <div class="sub-add">
+            <input id="d-sub-input" type="text" placeholder="Add a subtask…  ↵" maxlength="140" />
+          </div>
+        </div>
+        <div class="drawer-meta" id="drawer-meta"></div>
+      </div>
+      <div class="drawer-foot">
+        <button class="btn ghost danger" id="d-delete">Delete</button>
+        <button class="btn ghost" id="d-duplicate">Duplicate</button>
+        <button class="btn dark" id="d-done">Save</button>
+      </div>
+    </aside>
+
+    <!-- ============ COMMAND PALETTE ============ -->
+    <div class="palette-wrap" id="palette" hidden>
+      <div class="palette" role="dialog" aria-label="Command palette">
+        <div class="palette-input">
+          <span aria-hidden="true">⌕</span>
+          <input id="palette-input" type="text" placeholder="Type a task, project, or command…" autocomplete="off" />
+          <kbd>esc</kbd>
+        </div>
+        <div class="palette-list" id="palette-list"></div>
+      </div>
+    </div>
+
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+  </div>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
