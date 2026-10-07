@@ -5,6 +5,7 @@ const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const LS_BASE = "cadence.v1";
 const lsKey = () => (window.__cadenceUserId ? `${LS_BASE}.${window.__cadenceUserId}` : LS_BASE);
+window.__cadenceLSKey = lsKey;
 const THEME_KEY = "cadence.theme";
 
 /* ---------- date utils ---------- */
@@ -61,17 +62,25 @@ function load(){
   catch{ return null; }
 }
 let db = load() || seed();
-function save(){ db.history = db.history||{}; try{localStorage.setItem(lsKey(), JSON.stringify(db));}catch{} }
+function save(){
+  db.history = db.history||{};
+  try{localStorage.setItem(lsKey(), JSON.stringify(db));}catch{}
+  // Cloud sync (sync.js) listens and debounces a push to Supabase.
+  try{window.dispatchEvent(new CustomEvent("cadence:save"));}catch{}
+}
 // Supabase auth (auth.js) notifies us on login/logout/recovery so each
-// user gets isolated tasks on the same device.
-window.addEventListener("cadence:auth", () => {
+// user gets isolated tasks on the same device. Cloud pulls (sync.js)
+// dispatch `cadence:pull` after overwriting the local cache.
+function reloadFromCache(){
   try{
     db = load() || seed();
     state.view = "today"; state.projectId = null; state.query = ""; state.priority = "";
     if(typeof syncViews === "function") syncViews();
     render();
   }catch(e){ console.warn("auth reload failed", e); }
-});
+}
+window.addEventListener("cadence:auth", reloadFromCache);
+window.addEventListener("cadence:pull", reloadFromCache);
 
 /* ---------- ui state ---------- */
 const state = {

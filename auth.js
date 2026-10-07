@@ -1,7 +1,7 @@
 /* Cadence + Supabase Auth — login, signup, reset password, update password.
  * Static-site friendly (no build). Loaded as <script type="module">.
  */
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import { supabase, getCfg, cfgStatus } from "./supabase-client.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) =>
@@ -10,43 +10,8 @@ const esc = (s) =>
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]),
   );
 
-function getCfg() {
-  let url = "";
-  let anon = "";
-  try {
-    url =
-      localStorage.getItem("SUPABASE_URL") || window.SUPABASE_URL || "";
-    anon =
-      localStorage.getItem("SUPABASE_ANON_KEY") ||
-      window.SUPABASE_ANON_KEY ||
-      "";
-  } catch {
-    url = window.SUPABASE_URL || "";
-    anon = window.SUPABASE_ANON_KEY || "";
-  }
-  return { url: (url || "").trim(), anon: (anon || "").trim() };
-}
-function cfgStatus() {
-  const { url, anon } = getCfg();
-  if (!url || !anon) return "missing";
-  if (url.includes("YOUR-PROJECT") || anon.includes("YOUR-ANON")) return "placeholder";
-  return "ok";
-}
-
-let { url: URL, anon: ANON } = getCfg();
 const REDIRECT_TO = window.SUPABASE_REDIRECT_TO || window.location.origin + "/";
 const isConfigured = cfgStatus() === "ok";
-
-let supabase = null;
-if (isConfigured) {
-  supabase = createClient(URL, ANON, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-    },
-  });
-}
 
 /* ---------- overlay view switching ---------- */
 const overlay = () => $("#auth-overlay");
