@@ -10,11 +10,32 @@ const esc = (s) =>
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]),
   );
 
-const URL = window.SUPABASE_URL;
-const ANON = window.SUPABASE_ANON_KEY;
+function getCfg() {
+  let url = "";
+  let anon = "";
+  try {
+    url =
+      localStorage.getItem("SUPABASE_URL") || window.SUPABASE_URL || "";
+    anon =
+      localStorage.getItem("SUPABASE_ANON_KEY") ||
+      window.SUPABASE_ANON_KEY ||
+      "";
+  } catch {
+    url = window.SUPABASE_URL || "";
+    anon = window.SUPABASE_ANON_KEY || "";
+  }
+  return { url: (url || "").trim(), anon: (anon || "").trim() };
+}
+function cfgStatus() {
+  const { url, anon } = getCfg();
+  if (!url || !anon) return "missing";
+  if (url.includes("YOUR-PROJECT") || anon.includes("YOUR-ANON")) return "placeholder";
+  return "ok";
+}
+
+let { url: URL, anon: ANON } = getCfg();
 const REDIRECT_TO = window.SUPABASE_REDIRECT_TO || window.location.origin + "/";
-const isConfigured =
-  URL && ANON && !URL.includes("YOUR-PROJECT") && !ANON.includes("YOUR-ANON");
+const isConfigured = cfgStatus() === "ok";
 
 let supabase = null;
 if (isConfigured) {
@@ -226,11 +247,45 @@ async function init() {
     lockApp(false);
   });
 
+  $("#cfg-save")?.addEventListener("click", () => {
+    const u = $("#cfg-url")?.value.trim() || "";
+    const k = $("#cfg-key")?.value.trim() || "";
+    if (!u || !k) {
+      showError("Paste both the Project URL and anon key first.");
+      return;
+    }
+    if (!/^https:\/\/.+\.supabase\.co\/?$/.test(u) && !u.startsWith("https://")) {
+      showError("That URL doesn't look right — it should be https://xyz.supabase.co");
+      return;
+    }
+    try {
+      localStorage.setItem("SUPABASE_URL", u);
+      localStorage.setItem("SUPABASE_ANON_KEY", k);
+    } catch {}
+    location.reload();
+  });
+  $("#cfg-clear")?.addEventListener("click", () => {
+    try {
+      localStorage.removeItem("SUPABASE_URL");
+      localStorage.removeItem("SUPABASE_ANON_KEY");
+    } catch {}
+    location.reload();
+  });
+  // Pre-fill setup form with current effective values (unless placeholders)
+  try {
+    const { url, anon } = getCfg();
+    if (url && !url.includes("YOUR-PROJECT") && $("#cfg-url")) $("#cfg-url").value = url;
+    if (anon && !anon.includes("YOUR-ANON") && $("#cfg-key")) $("#cfg-key").value = anon;
+  } catch {}
+
   if (!isConfigured) {
     setAuthView("login");
     lockApp(true);
-    showError("Supabase not configured yet — paste your URL + anon key into supabase-config.js. You can still Continue as guest.");
+    showError("Supabase not configured yet — paste keys below in Supabase setup (or into supabase-config.js / .env.example), then Save. You can still Continue as guest.");
     paintUser(null);
+    // Open setup so user sees where to paste (matches your screenshot)
+    const det = $("#cfg-details");
+    if (det) det.open = true;
     return;
   }
 

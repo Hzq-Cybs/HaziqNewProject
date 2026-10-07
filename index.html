@@ -312,6 +312,16 @@
 
       <div class="auth-foot">
         <button class="link" id="auth-continue-guest">Continue as guest (demo)</button>
+        <details class="cfg" id="cfg-details">
+          <summary>Supabase setup — paste keys here</summary>
+          <p class="auth-hint">From Supabase → Project Settings → Data API. Same values as <code>.env.example</code>. Saved only in this browser.</p>
+          <label class="field"><span>Project URL</span><input id="cfg-url" type="url" inputmode="url" placeholder="https://xyz.supabase.co" autocomplete="off" /></label>
+          <label class="field"><span>Anon / publishable key</span><input id="cfg-key" type="password" placeholder="sb_publishable_... or eyJ..." autocomplete="off" /></label>
+          <div class="cfg-row">
+            <button class="btn dark" id="cfg-save" type="button">Save keys</button>
+            <button class="btn ghost" id="cfg-clear" type="button">Reset</button>
+          </div>
+        </details>
       </div>
     </div>
   </div>
