@@ -99,6 +99,9 @@
             <kbd>⌘K</kbd>
           </label>
           <button class="icon-btn" id="theme-toggle-2" aria-label="Toggle theme">◐</button>
+          <span class="user-email" id="user-email" hidden></span>
+          <button class="btn ghost auth-open" id="auth-open-btn" hidden>Sign in</button>
+          <button class="icon-btn" id="logout-btn" aria-label="Sign out" title="Sign out" hidden>⎋</button>
           <button class="avatar" id="avatar" title="Your day">H</button>
         </div>
       </header>
@@ -243,6 +246,78 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
   </div>
 
+  <!-- ============ AUTH (Supabase) ============ -->
+  <div class="auth-wrap" id="auth-overlay" hidden>
+    <div class="auth-card" role="dialog" aria-label="Sign in">
+      <div class="brand auth-brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30"><rect width="32" height="32" rx="9" fill="#1A1917"/><path d="M9 20.5c3-0.5 4.5-2 5.5-5.5 1 3.5 2.5 5 5.5 5.5-3 0.5-4.5 2-5.5 5.5-1-3.5-2.5-5-5.5-5.5z" fill="#F7F5F0"/></svg>
+        </div>
+        <div class="brand-text">
+          <strong>Cadence</strong>
+          <span>Sign in to sync your day</span>
+        </div>
+      </div>
+
+      <div class="auth-tabs" role="tablist" aria-label="Auth mode">
+        <button class="auth-tab is-active" data-view="login" role="tab">Sign in</button>
+        <button class="auth-tab" data-view="signup" role="tab">Create account</button>
+      </div>
+
+      <p class="auth-error" id="auth-error" hidden></p>
+      <p class="auth-status" id="auth-status" hidden></p>
+
+      <!-- Login -->
+      <form class="auth-panel" data-view="login" id="login-form">
+        <label class="field"><span>Email</span><input id="login-email" type="email" autocomplete="email" placeholder="you@work.com" required /></label>
+        <label class="field"><span>Password</span><input id="login-password" type="password" autocomplete="current-password" placeholder="••••••••" required /></label>
+        <button class="btn dark auth-submit" type="submit">Sign in</button>
+        <button class="link auth-link" data-goto="forgot">Forgot password?</button>
+      </form>
+
+      <!-- Signup -->
+      <form class="auth-panel" data-view="signup" id="signup-form" hidden>
+        <label class="field"><span>Email</span><input id="signup-email" type="email" autocomplete="email" placeholder="you@work.com" required /></label>
+        <label class="field"><span>Password (min 6 chars)</span><input id="signup-password" type="password" autocomplete="new-password" placeholder="••••••••" required /></label>
+        <label class="field"><span>Confirm password</span><input id="signup-password2" type="password" autocomplete="new-password" placeholder="••••••••" required /></label>
+        <button class="btn dark auth-submit" type="submit">Create account</button>
+        <p class="auth-hint">We’ll email you a confirmation link if required by your Supabase settings.</p>
+      </form>
+
+      <!-- Forgot / reset -->
+      <form class="auth-panel" data-view="forgot" id="forgot-form" hidden>
+        <h2>Reset password</h2>
+        <p class="auth-hint">Enter your account email. We’ll send a secure reset link (valid 1 hour).</p>
+        <label class="field"><span>Email</span><input id="forgot-email" type="email" autocomplete="email" placeholder="you@work.com" required /></label>
+        <button class="btn dark auth-submit" type="submit">Send reset link</button>
+        <button class="link auth-link" data-goto="login">Back to sign in</button>
+      </form>
+
+      <!-- Update password (opened from email link) -->
+      <form class="auth-panel" data-view="update" id="update-form" hidden>
+        <h2>Set a new password</h2>
+        <p class="auth-hint">You’re verified — choose a new password below.</p>
+        <label class="field"><span>New password (min 6 chars)</span><input id="update-password" type="password" autocomplete="new-password" required /></label>
+        <label class="field"><span>Confirm new password</span><input id="update-password2" type="password" autocomplete="new-password" required /></label>
+        <button class="btn dark auth-submit" type="submit">Update password</button>
+      </form>
+
+      <!-- Check email -->
+      <div class="auth-panel" data-view="check-email" hidden>
+        <h2>Check your inbox</h2>
+        <p class="auth-hint" id="check-email-hint">Confirmation link sent.</p>
+        <p class="auth-mail" id="check-email-addr"></p>
+        <button class="btn ghost auth-submit" data-goto="login">Back to sign in</button>
+      </div>
+
+      <div class="auth-foot">
+        <button class="link" id="auth-continue-guest">Continue as guest (demo)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./supabase-config.js"></script>
   <script src="./app.js" defer></script>
+  <script type="module" src="./auth.js"></script>
 </body>
 </html>

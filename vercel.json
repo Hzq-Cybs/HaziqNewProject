@@ -8,8 +8,12 @@
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, immutable" }]
     },
     {
-      "source": "/app.js",
+      "source": "/(app.js|auth.js)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, immutable" }]
+    },
+    {
+      "source": "/supabase-config.js",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=300" }]
     },
     {
       "source": "/(.*)",

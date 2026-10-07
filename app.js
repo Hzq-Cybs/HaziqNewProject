@@ -3,7 +3,8 @@
 "use strict";
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
-const LS_KEY = "cadence.v1";
+const LS_BASE = "cadence.v1";
+const lsKey = () => (window.__cadenceUserId ? `${LS_BASE}.${window.__cadenceUserId}` : LS_BASE);
 const THEME_KEY = "cadence.theme";
 
 /* ---------- date utils ---------- */
@@ -46,13 +47,31 @@ function seed(){
   return {projects:[p1,p2,p3], tasks, history:{[t]:1}, focusId:tasks[0].id, createdAt:Date.now()};
 }
 
-/* ---------- store ---------- */
+/* ---------- store (per-user when logged in via Supabase) ---------- */
 function load(){
-  try{ const raw = localStorage.getItem(LS_KEY); if(!raw) return null; const d = JSON.parse(raw); if(!Array.isArray(d.tasks)||!Array.isArray(d.projects)) return null; return d; }
+  // Migrate legacy shared data to the new per-user key on first login.
+  try{
+    const key = lsKey();
+    let raw = localStorage.getItem(key);
+    if(!raw && window.__cadenceUserId){
+      const legacy = localStorage.getItem(LS_BASE);
+      if(legacy){ localStorage.setItem(key, legacy); raw = legacy; }
+    }
+    if(!raw) return null; const d = JSON.parse(raw); if(!Array.isArray(d.tasks)||!Array.isArray(d.projects)) return null; return d; }
   catch{ return null; }
 }
 let db = load() || seed();
-function save(){ db.history = db.history||{}; try{localStorage.setItem(LS_KEY, JSON.stringify(db));}catch{} }
+function save(){ db.history = db.history||{}; try{localStorage.setItem(lsKey(), JSON.stringify(db));}catch{} }
+// Supabase auth (auth.js) notifies us on login/logout/recovery so each
+// user gets isolated tasks on the same device.
+window.addEventListener("cadence:auth", () => {
+  try{
+    db = load() || seed();
+    state.view = "today"; state.projectId = null; state.query = ""; state.priority = "";
+    if(typeof syncViews === "function") syncViews();
+    render();
+  }catch(e){ console.warn("auth reload failed", e); }
+});
 
 /* ---------- ui state ---------- */
 const state = {

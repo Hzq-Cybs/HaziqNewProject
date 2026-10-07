@@ -324,6 +324,29 @@ kbd{
 }
 .toast button{color:inherit;text-decoration:underline;font-weight:700}
 
+/* auth */
+.auth-wrap{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,18,15,.45);backdrop-filter:blur(6px)}
+.auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 24px 16px;animation:pop .2s ease;max-height:92dvh;overflow:auto}
+.auth-brand{margin-bottom:14px}
+.auth-tabs{display:flex;background:var(--surface-2);border-radius:999px;padding:3px;margin:6px 0 16px}
+.auth-tab{flex:1;border-radius:999px;padding:8px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.auth-tab.is-active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.auth-panel h2{font-family:var(--font-display);font-size:22px;margin:2px 0 6px;letter-spacing:-.02em}
+.auth-panel .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.auth-panel .field span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.auth-panel .field input{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);outline:none}
+.auth-panel .field input:focus{border-color:var(--accent)}
+.auth-submit{width:100%;justify-content:center;margin-top:4px}
+.auth-error{background:#FDECEA;color:#8A1F18;border:1px solid #F3C2BC;border-radius:10px;padding:9px 12px;font-size:13.5px;margin:0 0 12px}
+.auth-status{font-size:13px;color:var(--muted);margin:0 0 12px}
+.auth-hint{font-size:13px;color:var(--muted);margin:8px 0}
+.auth-mail{font-weight:700;word-break:break-all}
+.auth-link{margin:12px auto 0;display:block}
+.auth-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);text-align:center}
+.user-email{font-size:12.5px;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-open{white-space:nowrap}
+.top-actions .auth-open{padding:7px 12px;font-size:13px}
+
 /* responsive */
 @media (max-width:960px){
   .app{grid-template-columns:1fr}
